@@ -22,52 +22,21 @@
       flake = false;
     };
   };
-  outputs = {
-    self,
-    flake-parts,
-    ...
-  } @ inputs:
+  outputs = {flake-parts, ...} @ inputs:
     flake-parts.lib.mkFlake {inherit inputs;} {
-      systems = ["x86_64-linux" "aarch64-linux"];
+      systems = ["x86_64-linux"];
       imports = [
         inputs.devshell.flakeModule
         inputs.flake-root.flakeModule
         inputs.treefmt-nix.flakeModule
         ./checks.nix
         ./formatter.nix
+        ./examples
       ];
-      flake = {lib, ...}: {
-        nixosConfigurations = {
-          crossed = lib.nixosSystem {
-            system = "aarch64-linux";
-            modules = [
-              {
-                nixpkgs.hostPlatform.system = "aarch64-linux";
-                nixpkgs.buildPlatform.system = "x86_64-linux";
-                nixpkgs.overlays = [
-                  (import ./ocaml.nix {inherit (inputs) nixpkgs;})
-                  (final: _prev: {
-                    caml-crush = final.callPackage ./caml-crush.nix {};
-                  })
-                ];
-              }
-              ({pkgs, ...}: {
-                environment.systemPackages = with pkgs; [
-                  # List problematic packages here
-                  caml-crush
-                ];
-                boot.isContainer = true; # Don't build kernel and other slow things
-              })
-            ];
-          };
-        };
-      };
-      perSystem = {
-        system,
-        ...
-      }: {
-        packages = {
-          crossed = self.nixosConfigurations.crossed.config.system.build.toplevel;
+      flake = _: {
+        overlays = rec {
+          ocaml = import ./ocaml.nix {inherit (inputs) nixpkgs;};
+          default = ocaml;
         };
       };
     };

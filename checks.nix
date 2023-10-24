@@ -1,8 +1,5 @@
 {inputs, ...}: {
-  perSystem = {
-    pkgs,
-    ...
-  }: {
+  perSystem = {pkgs, ...}: {
     checks = let
       devour-flake = pkgs.callPackage inputs.devour-flake {};
     in {

@@ -11,9 +11,10 @@
         else osuper.dune_1;
     };
     super = prev;
-  in overlayOCamlPackages {
-    inherit super nixpkgs;
-    overlays = crossOverlays ++ [duneOverlay];
-    updateOCamlPackages = true;
-  }
+  in
+    overlayOCamlPackages {
+      inherit super nixpkgs;
+      overlays = crossOverlays ++ [duneOverlay];
+      updateOCamlPackages = true;
+    }
 )
