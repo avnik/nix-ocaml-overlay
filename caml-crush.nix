@@ -1,7 +1,6 @@
 {
   stdenv,
   lib,
-  callPackage,
   fetchFromGitHub,
   ocamlPackages,
   coccinelle,
@@ -18,7 +17,7 @@
     camlp4
     config-file
     ;
-  ocamlnet = ocamlPackages.ocamlnet.overrideAttrs (old: {
+  ocamlnet = ocamlPackages.ocamlnet.overrideAttrs (_old: {
     # Fix broken ocamlrpcgen
     dontStrip = true;
   });
