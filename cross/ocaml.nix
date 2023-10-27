@@ -175,7 +175,8 @@ in [
       dune_3 = natocamlPackages.dune;
       inherit (natocamlPackages) dune;
       inherit (natocamlPackages) ocamlbuild;
-      inherit (natocamlPackages) opaline;
+      #inherit (natocamlPackages) opaline;
+      opaline = osuper.opaline.override {ocamlPackages = oself;};
 
       buildDunePackage = args:
         (osuper.buildDunePackage (
@@ -417,6 +418,39 @@ in [
         buildFlagsArray+=("host=${stdenv.hostPlatform.config}")
       '';
       preInstall = "mkdir -p $OCAMLFIND_DESTDIR";
+    });
+    yojson = osuper.yojson.overrideAttrs (_o: {
+      buildInputs = [oself.seq];
+    });
+    dune-configurator = osuper.dune-configurator.overrideAttrs (_o: {
+      preBuild = "rm -rf vendor/csexp vendor/pp";
+    });
+
+    # opaline = osuper.opaline.overrideAttrs (o: {
+    #      buildInputs = o.buildInputs ++ [ oself.opam-file-format ];
+    #    });
+    dune_3 = osuper.dune_3.overrideAttrs (_o: {
+      src = builtins.fetchurl {
+        url = "https://github.com/ocaml/dune/releases/download/3.11.1/dune-3.11.1.tbz";
+        sha256 = "0w9zxp2hzi4ndiraclv90jm2nycq82xri7dzyc27dbxdml3j6vw6";
+      };
+      #    nativeBuildInputs = o.nativeBuildInputs ++ [ makeWrapper ];
+      #    postFixup =
+      #      if stdenv.isDarwin then ''
+      #        wrapProgram $out/bin/dune \
+      #          --suffix PATH : "${darwin.sigtool}/bin"
+      #      '' else "";
+    });
+    mew = osuper.mew.overrideAttrs (_: {
+      propagatedBuildInputs = [oself.trie];
+      postPatch = ''
+        substituteInPlace src/dune --replace "result" ""
+      '';
+    });
+    pyml = osuper.pyml.override {utop = null;};
+    ocaml_pcre = osuper.ocaml_pcre.overrideAttrs (_o: {
+      nativeBuildInputs = [osuper.dune-configurator];
+      buildInputs = [];
     });
   })
 ]

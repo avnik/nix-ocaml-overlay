@@ -22,7 +22,11 @@
       flake = false;
     };
   };
-  outputs = {flake-parts, ...} @ inputs:
+  outputs = {
+    flake-parts,
+    self,
+    ...
+  } @ inputs:
     flake-parts.lib.mkFlake {inherit inputs;} {
       systems = ["x86_64-linux"];
       imports = [
@@ -32,11 +36,14 @@
         ./checks.nix
         ./formatter.nix
         ./examples
+        ./lib
+        ./overlays
       ];
-      flake = _: {
+      flake = {
         overlays = rec {
-          ocaml = import ./ocaml.nix {inherit (inputs) nixpkgs;};
-          default = ocaml;
+          default = self.overlays.combined;
+          #          ocaml = import ./ocaml.nix {inherit (inputs) nixpkgs;};
+          #          default = ocaml;
         };
       };
     };
