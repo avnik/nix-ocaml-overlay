@@ -36,7 +36,7 @@
     native
     compiler
     findlib
-#    dune
+    dune
     build-tools
     cross-fixes
     updates

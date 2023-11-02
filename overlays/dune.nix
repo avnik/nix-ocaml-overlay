@@ -9,8 +9,9 @@ in
     oself,
     osuper,
     lib,
+    isCross,
     ...
-  }: {
+  }: lib.optionalAttrs isCross {
       dune_2 = osuper.nativeOCamlPackages.dune_2;
       dune_3 = osuper.nativeOCamlPackages.dune_3;
       dune =
