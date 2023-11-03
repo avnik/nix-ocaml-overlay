@@ -42,8 +42,6 @@
       flake = {
         overlays = rec {
           default = self.overlays.combined;
-          #          ocaml = import ./ocaml.nix {inherit (inputs) nixpkgs;};
-          #          default = ocaml;
         };
       };
     };

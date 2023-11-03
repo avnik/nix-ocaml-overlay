@@ -20,10 +20,15 @@ in
     });
     dune-configurator = osuper.dune-configurator.overrideAttrs (_o: {
       preBuild = "rm -rf vendor/csexp vendor/pp";
+      buildInputs = [ oself.csexp ];
     });
     pyml = osuper.pyml.override {utop = null;};
     ocaml_pcre = osuper.ocaml_pcre.overrideAttrs (_o: {
       nativeBuildInputs = [osuper.dune-configurator];
+      buildInputs = [];
+    });
+    react = osuper.react.overrideAttrs (o: {
+      nativeBuildInputs = o.nativeBuildInputs ++ [oself.topkg];
       buildInputs = [];
     });
   })

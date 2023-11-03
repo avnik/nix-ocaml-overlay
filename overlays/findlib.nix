@@ -79,7 +79,6 @@ in
         dontBuild = true;
         installPhase = ''
           mkdir -p $out/findlib.conf.d
-          ln -sf ${native_findlib_conf} $out/findlib.conf
           ln -sf ${aarch64_findlib_conf} $out/findlib.conf.d/${crossName}.conf
         '';
       };
@@ -92,8 +91,8 @@ in
       });
   in
     (lib.mapAttrs
-      (_: p:
-        if (isCross && p ? overrideAttrs && !(lib.elem p [osuper.ocaml osuper.findlib]))
+      (a: p:
+        if (isCross && p ? overrideAttrs && !(lib.elem a ["ocaml" "ocamlfind"]))
         then fixOCamlPackage p
         else p)
       osuper) //
