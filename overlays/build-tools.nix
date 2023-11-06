@@ -1,8 +1,4 @@
-{
-  self,
-  inputs,
-  ...
-}: let
+{self, ...}: let
   inherit (self.lib) liftOCamlOverlay';
 in
   liftOCamlOverlay' ({
@@ -13,11 +9,12 @@ in
     isCross,
     crossName,
     ...
-  }: lib.optionalAttrs isCross {
-    dune-configurator = osuper.nativeOCamlPackages.dune-configurator;
-    ocamlbuild = osuper.nativeOCamlPackages.ocamlbuild;
-    opaline = osuper.nativeOCamlPackages.opaline.override {ocamlPackages = osuper.nativeOCamlPackages;};
-    topkg = oself.nativeOCamlPackages.topkg.overrideAttrs (_o: let
+  }:
+    lib.optionalAttrs isCross {
+      inherit (osuper.nativeOCamlPackages) dune-configurator;
+      inherit (osuper.nativeOCamlPackages) ocamlbuild;
+      opaline = osuper.nativeOCamlPackages.opaline.override {ocamlPackages = osuper.nativeOCamlPackages;};
+      topkg = oself.nativeOCamlPackages.topkg.overrideAttrs (_o: let
         natocamlPackages = oself.nativeOCamlPackages;
         natocaml = natocamlPackages.ocaml;
         natfindlib = natocamlPackages.findlib;
@@ -42,4 +39,4 @@ in
           addEnvHooks "$targetOffset" addToolchainVariable
         '';
       });
-  })
+    })

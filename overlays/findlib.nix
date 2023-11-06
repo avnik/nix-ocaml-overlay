@@ -1,8 +1,4 @@
-{
-  self,
-  inputs,
-  ...
-}: let
+{self, ...}: let
   inherit (self.lib) liftOCamlOverlay' mergeInputs;
 in
   liftOCamlOverlay' ({
@@ -14,8 +10,7 @@ in
     crossName,
     isCross,
     ...
-  }:
-  let
+  }: let
     natocamlPackages = oself.nativeOCamlPackages;
     natocaml = natocamlPackages.ocaml;
     natfindlib = natocamlPackages.findlib;
@@ -27,35 +22,11 @@ in
           "checkInputs"
         ]
         package;
-      natInputs =
-        mergeInputs [
-          "propagatedBuildInputs"
-          "buildInputs"
-          "nativeBuildInputs"
-        ]
-        nativePackage;
 
       path =
         builtins.concatStringsSep ":"
         (builtins.map (x: "${x.outPath}/lib/ocaml/${natocaml.version}/${crossName}-sysroot/lib")
           inputs);
-      natPath =
-        builtins.concatStringsSep ":"
-        (builtins.map (x: "${x.outPath}/lib/ocaml/${natocaml.version}/site-lib")
-          natInputs);
-
-      native_findlib_conf = final.writeText "${package.name or package.pname}-findlib.conf" ''
-        path="${natocaml}/lib/ocaml:${natfindlib}/lib/ocaml/${natocaml.version}/site-lib:${natPath}"
-        ldconf="ignore"
-        stdlib = "${natocaml}/lib/ocaml"
-        ocamlc = "${natocaml}/bin/ocamlc"
-        ocamlopt = "${natocaml}/bin/ocamlopt"
-        ocamlcp = "${natocaml}/bin/ocamlcp"
-        ocamlmklib = "${natocaml}/bin/ocamlmklib"
-        ocamlmktop = "${natocaml}/bin/ocamlmktop"
-        ocamldoc = "${natocaml}/bin/ocamldoc"
-        ocamldep = "${natocaml}/bin/ocamldep"
-      '';
       aarch64_findlib_conf = let
         inherit (oself) ocaml findlib;
       in
@@ -71,7 +42,7 @@ in
           ocamldoc(${crossName}) = "${natocaml}/bin/ocamldoc"
           ocamldep(${crossName}) = "${ocaml}/bin/ocamldep"
         '';
-     findlib_conf = stdenv.mkDerivation {
+      findlib_conf = stdenv.mkDerivation {
         name = "${package.name or package.pname}-findlib-conf";
         version = "0.0.1";
         unpackPhase = "true";
@@ -95,9 +66,9 @@ in
         if (isCross && p ? overrideAttrs && !(lib.elem a ["ocaml" "ocamlfind"]))
         then fixOCamlPackage p
         else p)
-      osuper) //
-  {
-    findlib = osuper.findlib.overrideAttrs (_o: {
+      osuper)
+    // {
+      findlib = osuper.findlib.overrideAttrs (_o: {
         postInstall = lib.optionalString isCross ''
           rm -rf $out/bin/ocamlfind
           cp ${natfindlib}/bin/ocamlfind $out/bin/ocamlfind
@@ -143,4 +114,4 @@ in
           fi
         '';
       });
-  })
+    })

@@ -1,8 +1,4 @@
-{
-  self,
-  inputs,
-  ...
-}: let
+{self, ...}: let
   inherit (self.lib) liftOCamlOverlay';
 in
   liftOCamlOverlay' ({
@@ -20,7 +16,7 @@ in
     });
     dune-configurator = osuper.dune-configurator.overrideAttrs (_o: {
       preBuild = "rm -rf vendor/csexp vendor/pp";
-      buildInputs = [ oself.csexp ];
+      buildInputs = [oself.csexp];
     });
     pyml = osuper.pyml.override {utop = null;};
     ocaml_pcre = osuper.ocaml_pcre.overrideAttrs (_o: {

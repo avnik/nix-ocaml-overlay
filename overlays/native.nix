@@ -3,7 +3,6 @@
 in
   liftOCamlOverlay' ({
     buildPackages,
-    stdenv,
     packageSetName,
     ...
   }: {

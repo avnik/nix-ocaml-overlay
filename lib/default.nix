@@ -1,6 +1,5 @@
-{lib, config, ...}@a:
-{
-    /*
+{lib, ...} @ a: {
+  /*
   imports = [
     ./ocaml.nix
     ./merge-inputs.nix

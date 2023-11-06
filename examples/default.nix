@@ -28,7 +28,6 @@
   perSystem = {system, ...}: {
     packages = {
       crossed = self.nixosConfigurations.crossed.config.system.build.toplevel;
-      ocaml-ng = self.nixosConfigurations.crossed.config.system.nixpkgs.pkgs.ocaml-ng;
     };
   };
 }

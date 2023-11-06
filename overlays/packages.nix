@@ -1,11 +1,5 @@
-{
-  self,
-  inputs,
-  ...
-}: let
+{self, ...}: let
   inherit (self.lib) liftOCamlOverlay';
 in
-  liftOCamlOverlay' ({
-    ...
-  }: {
+  liftOCamlOverlay' (_: {
   })
